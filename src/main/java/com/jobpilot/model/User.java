@@ -1,6 +1,7 @@
 package com.jobpilot.model;
 
 import jakarta.persistence.*;
+import java.util.List;
 
 @Entity
 @Table(name = "users")
@@ -9,6 +10,9 @@ public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @OneToMany(mappedBy = "user")
+    private List<Job> jobs;
 
     private String name;
     private String email;
