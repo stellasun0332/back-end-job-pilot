@@ -8,7 +8,7 @@ WORKDIR /app
 COPY . .
 
 # Build the JAR file (skip tests to speed up the build)
-RUN mvn clean package -DskipTests
+RUN mvn clean package -DskipTests=true
 
 # ========================
 # Stage 2: Runtime Stage
@@ -16,11 +16,11 @@ RUN mvn clean package -DskipTests
 FROM openjdk:17-jdk-slim
 WORKDIR /app
 
-# Copy the generated JAR file from the build stage
+# Copy the JAR file from the build stage
 COPY --from=build /app/target/*.jar app.jar
 
-# Expose port 8080 for Spring Boot application
+# Set port
 EXPOSE 8080
 
-# Command to run the Spring Boot app
+# Start the app
 ENTRYPOINT ["java", "-jar", "app.jar"]
