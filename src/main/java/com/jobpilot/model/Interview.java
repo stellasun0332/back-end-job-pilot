@@ -1,9 +1,11 @@
 package com.jobpilot.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 @Entity
 @Table(name = "interviews")
 public class Interview {
@@ -13,6 +15,7 @@ public class Interview {
     private Long id;
 
     @ManyToOne
+    @JsonIgnoreProperties("interviews")
     @JoinColumn(name = "job_id", nullable = false)
     private Job job;
 
@@ -25,7 +28,7 @@ public class Interview {
 
     private LocalDateTime reminderDatetime;
 
-    // ✅ 必须要有 getter 和 setter，Spring 才能绑定 JSON
+    // Getters and setters are required for Spring to bind JSON data
     public Long getId() {
         return id;
     }

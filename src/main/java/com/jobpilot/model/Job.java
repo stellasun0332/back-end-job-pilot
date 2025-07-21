@@ -1,8 +1,10 @@
 package com.jobpilot.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import java.time.LocalDate;
 
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 @Entity
 @Table(name = "jobs")
 public class Job {
@@ -13,6 +15,7 @@ public class Job {
 
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
+    @JsonIgnoreProperties("jobs")
     private User user;
 
     private String title;

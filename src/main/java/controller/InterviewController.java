@@ -61,3 +61,4 @@ public class InterviewController {
         interviewRepository.deleteById(id);
     }
 }
+
