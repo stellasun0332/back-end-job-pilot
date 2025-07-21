@@ -4,11 +4,11 @@
 FROM maven:3.9.4-eclipse-temurin-17 AS build
 WORKDIR /app
 
-# Copy all project files into the container
+# Copy all project files
 COPY . .
 
-# Build the JAR file (skip tests to speed up the build)
-RUN mvn clean package -DskipTests=true
+# Build the JAR file
+RUN mvn clean package -DskipTests
 
 # ========================
 # Stage 2: Runtime Stage
@@ -16,11 +16,11 @@ RUN mvn clean package -DskipTests=true
 FROM openjdk:17-jdk-slim
 WORKDIR /app
 
-# Copy the JAR file from the build stage
-COPY --from=build /app/target/*.jar app.jar
+# Copy the built jar to the runtime image
+COPY --from=build /app/target/back-end-job-pilot-1.0-SNAPSHOT.jar app.jar
 
-# Set port
+# Expose the default Spring Boot port
 EXPOSE 8080
 
-# Start the app
+# Run the jar
 ENTRYPOINT ["java", "-jar", "app.jar"]
