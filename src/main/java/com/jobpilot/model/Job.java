@@ -21,12 +21,11 @@ public class Job {
     private String title;
     private String company;
 
-    private LocalDate appliedOn;
+    private LocalDate dateApplied;
 
     private String status;
-    private String jobDescription;
+    private String jdLink;
     private String notes;
-    private LocalDate reminderDate;
     private String resumeFile;
 
     public Job() {}
@@ -48,20 +47,19 @@ public class Job {
     public String getCompany() { return company; }
     public void setCompany(String company) { this.company = company; }
 
-    public LocalDate getAppliedOn() { return appliedOn; }
-    public void setAppliedOn(LocalDate appliedOn) { this.appliedOn = appliedOn; }
+    public LocalDate getDateApplied() { return dateApplied; }
+    public void setDateApplied(LocalDate appliedOn) { this.dateApplied = appliedOn; }
 
     public String getStatus() { return status; }
     public void setStatus(String status) { this.status = status; }
 
-    public String getJobDescription() { return jobDescription; }
-    public void setJobDescription(String jobDescription) { this.jobDescription = jobDescription; }
+    public String getJdLink() { return jdLink; }
+
+    public void setJdLink(String jobDescription) { this.jdLink = jobDescription; }
 
     public String getNotes() { return notes; }
     public void setNotes(String notes) { this.notes = notes; }
 
-    public LocalDate getReminderDate() { return reminderDate; }
-    public void setReminderDate(LocalDate reminderDate) { this.reminderDate = reminderDate; }
 
     public String getResumeFile() { return resumeFile; }
     public void setResumeFile(String resumeFile) { this.resumeFile = resumeFile; }

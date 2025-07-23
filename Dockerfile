@@ -1,6 +1,4 @@
-# ========================
 # Stage 1: Build Stage
-# ========================
 FROM maven:3.9.4-eclipse-temurin-17 AS build
 WORKDIR /app
 
@@ -10,9 +8,8 @@ COPY . .
 # Build the JAR file
 RUN mvn clean package -DskipTests
 
-# ========================
+
 # Stage 2: Runtime Stage
-# ========================
 FROM openjdk:17-jdk-slim
 WORKDIR /app
 

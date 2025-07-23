@@ -5,8 +5,10 @@ import com.jobpilot.repository.JobRepository;
 import com.jobpilot.repository.UserRepository;
 import com.jobpilot.model.User;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
+import org.springframework.web.server.ResponseStatusException;
+import org.springframework.http.HttpStatus;
 import java.util.List;
 import java.util.Optional;
 
@@ -23,13 +25,19 @@ public class JobController {
     // Create a Job
     @PostMapping
     public Job createJob(@RequestBody Job jobData) {
-        // 检查 user 是否存在
-        Optional<User> userOpt = userRepository.findById(jobData.getUser().getId());
-        if (userOpt.isEmpty()) {
-            throw new RuntimeException("User not found with id: " + jobData.getUser().getId());
+        if (jobData.getUser() == null || jobData.getUser().getId() == null) {
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST,
+                    "Missing user or user id in request body");
         }
 
-        // 设置用户对象（确保是托管的 Entity）
+        Optional<User> userOpt = userRepository.findById(jobData.getUser().getId());
+        if (userOpt.isEmpty()) {
+            throw new ResponseStatusException(
+                    HttpStatus.NOT_FOUND,
+                    "User not found with id: " + jobData.getUser().getId());
+        }
+
         jobData.setUser(userOpt.get());
 
         return jobRepository.save(jobData);
@@ -50,18 +58,19 @@ public class JobController {
 
     // update Job
     @PutMapping("/{id}")
-    public Job updateJob(@PathVariable Long id, @RequestBody Job updatedJob) {
-        Job job = jobRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Job not found"));
-
-        job.setTitle(updatedJob.getTitle());
-        job.setCompany(updatedJob.getCompany());
-        job.setStatus(updatedJob.getStatus());
-        // 其他字段也可以继续 set...
-
-        return jobRepository.save(job);
+    public ResponseEntity<Job> updateJob(@PathVariable Long id, @RequestBody Job updatedJob) {
+        return jobRepository.findById(id)
+                .map(job -> {
+                    job.setTitle(updatedJob.getTitle());
+                    job.setCompany(updatedJob.getCompany());
+                    job.setStatus(updatedJob.getStatus());
+                    job.setNotes(updatedJob.getNotes());
+                    job.setDateApplied(updatedJob.getDateApplied());
+                    job.setJdLink(updatedJob.getJdLink());
+                    return ResponseEntity.ok(updatedJob);
+                })
+                .orElseThrow(() -> new RuntimeException("Job not found with id: " + id));
     }
-
 //    Delete a Job
     @DeleteMapping("/{id}")
     public void deleteJob(@PathVariable Long id) {
