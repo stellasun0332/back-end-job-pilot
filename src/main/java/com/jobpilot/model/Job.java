@@ -24,9 +24,10 @@ public class Job {
     private LocalDate dateApplied;
 
     private String status;
-    private String jdLink;
+    private String jobDescription;
     private String notes;
     private String resumeFile;
+    private LocalDate reminderDate;
 
     public Job() {}
 
@@ -53,13 +54,14 @@ public class Job {
     public String getStatus() { return status; }
     public void setStatus(String status) { this.status = status; }
 
-    public String getJdLink() { return jdLink; }
-
-    public void setJdLink(String jobDescription) { this.jdLink = jobDescription; }
+    public String getJobDescription() { return jobDescription; }
+    public void setJobDescription(String jobDescription) { this.jobDescription = jobDescription; }
 
     public String getNotes() { return notes; }
     public void setNotes(String notes) { this.notes = notes; }
 
+    public LocalDate getReminderDate() {return reminderDate;}
+    public void setReminderDate(LocalDate reminderDate) {this.reminderDate = reminderDate;}
 
     public String getResumeFile() { return resumeFile; }
     public void setResumeFile(String resumeFile) { this.resumeFile = resumeFile; }

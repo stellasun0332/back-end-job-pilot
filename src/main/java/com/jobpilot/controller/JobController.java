@@ -11,6 +11,9 @@ import org.springframework.web.server.ResponseStatusException;
 import org.springframework.http.HttpStatus;
 import java.util.List;
 import java.util.Optional;
+import java.util.Map;
+import java.time.LocalDate;
+
 
 @RestController
 @RequestMapping("/jobs")
@@ -49,14 +52,14 @@ public class JobController {
         return jobRepository.findAll();
     }
 
-    // Get a Job
+    //  Get a Job
     @GetMapping("/{id}")
     public Job getJobById(@PathVariable Long id) {
         return jobRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Job not found with id: " + id));
     }
 
-    // update Job
+    //  update Job
     @PutMapping("/{id}")
     public ResponseEntity<Job> updateJob(@PathVariable Long id, @RequestBody Job updatedJob) {
         return jobRepository.findById(id)
@@ -66,12 +69,39 @@ public class JobController {
                     job.setStatus(updatedJob.getStatus());
                     job.setNotes(updatedJob.getNotes());
                     job.setDateApplied(updatedJob.getDateApplied());
-                    job.setJdLink(updatedJob.getJdLink());
+                    job.setJobDescription(updatedJob.getJobDescription());
+                    job.setReminderDate(updatedJob.getReminderDate());
                     return ResponseEntity.ok(updatedJob);
                 })
                 .orElseThrow(() -> new RuntimeException("Job not found with id: " + id));
     }
-//    Delete a Job
+
+    //    update part of the job
+    @PatchMapping("/{id}")
+    public Job updateJobPartially(@PathVariable Long id, @RequestBody Map<String, Object> updates) {
+        Job job = jobRepository.findById(id).orElseThrow(() ->
+                new ResponseStatusException(HttpStatus.NOT_FOUND, "Job not found with id: " + id)
+        );
+
+        updates.forEach((key, value) -> {
+            switch (key) {
+                case "title" -> job.setTitle((String) value);
+                case "company" -> job.setCompany((String) value);
+                case "status" -> job.setStatus((String) value);
+                case "jobDescription" -> job.setJobDescription((String) value);
+                case "notes" -> job.setNotes((String) value);
+                case "resumeFile" -> job.setResumeFile((String) value);
+                case "dateApplied" -> job.setDateApplied(LocalDate.parse((String) value));
+                case "reminderDate" -> job.setReminderDate(LocalDate.parse((String) value));
+
+            }
+        });
+
+        return jobRepository.save(job);
+    }
+
+
+    //    Delete a Job
     @DeleteMapping("/{id}")
     public void deleteJob(@PathVariable Long id) {
         jobRepository.deleteById(id);
