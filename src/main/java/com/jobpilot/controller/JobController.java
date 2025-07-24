@@ -43,6 +43,10 @@ public class JobController {
 
         jobData.setUser(userOpt.get());
 
+        if (jobData.getReminderDate() == null && jobData.getDateApplied() != null) {
+            jobData.setReminderDate(jobData.getDateApplied().plusDays(5));
+        }
+
         return jobRepository.save(jobData);
     }
 
