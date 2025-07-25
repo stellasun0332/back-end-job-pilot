@@ -104,6 +104,14 @@ public class JobController {
         return jobRepository.save(job);
     }
 
+    @GetMapping("/reminders-due")
+    public List<Job> getJobsToRemind() {
+        LocalDate today = LocalDate.now();
+        String status = "Interview Scheduled";
+
+        return jobRepository.findByReminderDateBeforeAndStatus(today, status);
+    }
+
 
     //    Delete a Job
     @DeleteMapping("/{id}")
