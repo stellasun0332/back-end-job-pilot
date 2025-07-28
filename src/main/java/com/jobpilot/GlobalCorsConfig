@@ -1,3 +1,5 @@
+package com.jobpilot;
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.filter.CorsFilter;
@@ -13,7 +15,10 @@ public class GlobalCorsConfig {
     public CorsFilter corsFilter() {
         CorsConfiguration config = new CorsConfiguration();
         config.setAllowCredentials(true);
-        config.setAllowedOrigins(Arrays.asList("http://localhost:5173"));
+
+        // 关键改动 ✅：改为使用 allowedOriginPatterns + *
+        config.setAllowedOriginPatterns(Arrays.asList("*")); // Render 上建议用 Pattern，支持 https 本地和远程
+
         config.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
         config.setAllowedHeaders(Arrays.asList("*"));
 
