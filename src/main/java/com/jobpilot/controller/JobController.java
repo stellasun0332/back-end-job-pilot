@@ -9,11 +9,13 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+
 import java.util.List;
 import java.util.Optional;
 import java.util.Map;
 import java.time.LocalDate;
-
 
 @RestController
 @RequestMapping("/jobs")
@@ -31,18 +33,20 @@ public class JobController {
         if (jobData.getUser() == null || jobData.getUser().getId() == null) {
             throw new ResponseStatusException(
                     HttpStatus.BAD_REQUEST,
-                    "Missing user or user id in request body");
+                    "Missing user or user ID in request body.");
         }
 
         Optional<User> userOpt = userRepository.findById(jobData.getUser().getId());
         if (userOpt.isEmpty()) {
             throw new ResponseStatusException(
                     HttpStatus.NOT_FOUND,
-                    "User not found with id: " + jobData.getUser().getId());
+                    "User not found. No user exists with ID: " + jobData.getUser().getId()
+            );
         }
 
         jobData.setUser(userOpt.get());
 
+        // Set reminder date if not provided
         if (jobData.getReminderDate() == null && jobData.getDateApplied() != null) {
             jobData.setReminderDate(jobData.getDateApplied().plusDays(5));
         }
@@ -56,67 +60,54 @@ public class JobController {
         return jobRepository.findAll();
     }
 
-    //  Get a Job
+    // Get one Job by ID
     @GetMapping("/{id}")
     public Job getJobById(@PathVariable Long id) {
         return jobRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Job not found with id: " + id));
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND,
+                        "Job not found. No job exists with ID: " + id
+                ));
     }
 
-    //  update Job
-    @PutMapping("/{id}")
-    public ResponseEntity<Job> updateJob(@PathVariable Long id, @RequestBody Job updatedJob) {
-        return jobRepository.findById(id)
-                .map(job -> {
-                    job.setTitle(updatedJob.getTitle());
-                    job.setCompany(updatedJob.getCompany());
-                    job.setStatus(updatedJob.getStatus());
-                    job.setNotes(updatedJob.getNotes());
-                    job.setDateApplied(updatedJob.getDateApplied());
-                    job.setJobDescription(updatedJob.getJobDescription());
-                    job.setReminderDate(updatedJob.getReminderDate());
-                    return ResponseEntity.ok(updatedJob);
-                })
-                .orElseThrow(() -> new RuntimeException("Job not found with id: " + id));
-    }
-
-    //    update part of the job
+    // Partially update Job (PATCH)
     @PatchMapping("/{id}")
-    public Job updateJobPartially(@PathVariable Long id, @RequestBody Map<String, Object> updates) {
-        Job job = jobRepository.findById(id).orElseThrow(() ->
-                new ResponseStatusException(HttpStatus.NOT_FOUND, "Job not found with id: " + id)
-        );
+    public Job updateJob(@PathVariable Long id, @RequestBody Job updatedJob) {
+        Job job = jobRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND, "Job not found. No job exists with ID: " + id));
 
-        updates.forEach((key, value) -> {
-            switch (key) {
-                case "title" -> job.setTitle((String) value);
-                case "company" -> job.setCompany((String) value);
-                case "status" -> job.setStatus((String) value);
-                case "jobDescription" -> job.setJobDescription((String) value);
-                case "notes" -> job.setNotes((String) value);
-                case "resumeFile" -> job.setResumeFile((String) value);
-                case "dateApplied" -> job.setDateApplied(LocalDate.parse((String) value));
-                case "reminderDate" -> job.setReminderDate(LocalDate.parse((String) value));
-
-            }
-        });
+        if (updatedJob.getTitle() != null) job.setTitle(updatedJob.getTitle());
+        if (updatedJob.getCompany() != null) job.setCompany(updatedJob.getCompany());
+        if (updatedJob.getStatus() != null) job.setStatus(updatedJob.getStatus());
+        if (updatedJob.getNotes() != null) job.setNotes(updatedJob.getNotes());
+        if (updatedJob.getJobDescription() != null) job.setJobDescription(updatedJob.getJobDescription());
+        if (updatedJob.getDateApplied() != null) job.setDateApplied(updatedJob.getDateApplied());
+        if (updatedJob.getReminderDate() != null) job.setReminderDate(updatedJob.getReminderDate());
 
         return jobRepository.save(job);
     }
 
+    // Delete a Job
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteJob(@PathVariable Long id) {
+        if (!jobRepository.existsById(id)) {
+            throw new ResponseStatusException(
+                    HttpStatus.NOT_FOUND,
+                    "Job not found. No job exists with ID: " + id
+            );
+        }
+
+        jobRepository.deleteById(id);
+        return ResponseEntity.noContent().build();
+    }
+
+    // Get Jobs that are overdue for reminders
     @GetMapping("/reminders-due")
     public List<Job> getJobsToRemind() {
         LocalDate today = LocalDate.now();
-        String status = "Interview Scheduled";
+        String status = "Interview Scheduled";  // You can later make this configurable if needed
 
         return jobRepository.findByReminderDateBeforeAndStatus(today, status);
     }
-
-
-    //    Delete a Job
-    @DeleteMapping("/{id}")
-    public void deleteJob(@PathVariable Long id) {
-        jobRepository.deleteById(id);
-    }
-
 }
