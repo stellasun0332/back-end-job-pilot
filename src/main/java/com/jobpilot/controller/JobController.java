@@ -106,7 +106,7 @@ public class JobController {
     @GetMapping("/reminders-due")
     public List<Job> getJobsToRemind() {
         LocalDate today = LocalDate.now();
-        String status = "Interview Scheduled";  // You can later make this configurable if needed
+        String status = "Interview Scheduled";
 
         return jobRepository.findByReminderDateBeforeAndStatus(today, status);
     }
