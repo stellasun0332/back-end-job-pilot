@@ -20,10 +20,10 @@ public class GeminiService {
     public String getAnalysis(String jdText) {
         RestTemplate restTemplate = new RestTemplate();
 
-        // Gemini 2.5 Pro endpoint
+
         String GEMINI_URL = "https://generativelanguage.googleapis.com/v1/models/gemini-2.5-pro:generateContent?key=" + apiKey;
 
-        // Prompt template (in English)
+
         String prompt = """
 Analyze the following job description and extract the following information in a structured JSON format. Be specific and avoid generic terms.
 
