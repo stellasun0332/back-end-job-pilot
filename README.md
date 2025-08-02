@@ -1,6 +1,6 @@
 # Job Pilot - Backend API
 
-This is the backend service for **Job Pilot**, a job application tracking system built for the Ada Developers Academy Capstone project. The backend is developed using Java and Spring Boot and provides RESTful APIs to support job tracking, interview management, reminders, and AI-powered job description analysis.
+This is the backend com.jobpilot.service for **Job Pilot**, a job application tracking system built for the Ada Developers Academy Capstone project. The backend is developed using Java and Spring Boot and provides RESTful APIs to support job tracking, interview management, reminders, and AI-powered job description analysis.
 
 ## Team Information
 
