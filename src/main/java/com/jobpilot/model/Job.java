@@ -24,6 +24,8 @@ public class Job {
     private LocalDate dateApplied;
 
     private String status;
+    @Lob
+    @Column(columnDefinition = "TEXT")
     private String jobDescription;
     private String notes;
     private String resumeFile;
