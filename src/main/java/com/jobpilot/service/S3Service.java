@@ -68,7 +68,7 @@ public class S3Service {
                 .build();
 
         GetObjectPresignRequest presignRequest = GetObjectPresignRequest.builder()
-                .signatureDuration(Duration.ofMinutes(60)) // 有效时间：60分钟
+                .signatureDuration(Duration.ofMinutes(60)) // valid time: 60 minutes
                 .getObjectRequest(getObjectRequest)
                 .build();
 

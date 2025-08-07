@@ -52,5 +52,24 @@ public class ResumeController {
             return ResponseEntity.internalServerError().body("❌ Upload failed: " + e.getMessage());
         }
     }
+    @GetMapping("/download")
+    public ResponseEntity<String> downloadResume(@RequestParam("jobId") Long jobId) {
+        Optional<Job> optionalJob = jobRepository.findById(jobId);
+
+        if (optionalJob.isEmpty()) {
+            return ResponseEntity.badRequest().body("❌ Job not found");
+        }
+
+        Job job = optionalJob.get();
+        String resumeKey = job.getResumeFile();
+
+        if (resumeKey == null || resumeKey.isEmpty()) {
+            return ResponseEntity.badRequest().body("❌ No resume file associated with this job.");
+        }
+
+        String presignedUrl = s3Service.generatePresignedUrl(resumeKey);
+
+        return ResponseEntity.ok(presignedUrl);
+    }
 
 }
