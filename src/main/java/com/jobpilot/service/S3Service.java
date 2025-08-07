@@ -58,7 +58,7 @@ public class S3Service {
 
         s3Client.putObject(request, RequestBody.fromBytes(file.getBytes()));
 
-        return key; // 返回 key，用于后续生成预签名链接
+        return key;
     }
 
     public String generatePresignedUrl(String key) {
