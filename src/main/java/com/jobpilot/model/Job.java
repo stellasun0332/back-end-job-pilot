@@ -1,5 +1,6 @@
 package com.jobpilot.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import java.time.LocalDate;
@@ -35,13 +36,14 @@ public class Job {
     private String resumeFile;
     private LocalDate reminderDate;
 
-    /** ✨ 关键：声明与 Interview 的一对多，删除 Job 时级联删除 */
+    /** 关键：删除 Job 时级联删除 Interview；并且不把 interviews 序列化出去 */
     @OneToMany(
             mappedBy = "job",
-            cascade = CascadeType.REMOVE,   // 只在删除时级联，避免影响你现有的保存逻辑
-            orphanRemoval = true
+            cascade = CascadeType.REMOVE,   // 删除 job 时一并删掉 interviews
+            orphanRemoval = true,
+            fetch = FetchType.LAZY
     )
-    @JsonIgnoreProperties("job")        // 防止序列化递归
+    @JsonIgnore   // ← 防止 /jobs 响应触发懒加载
     private List<Interview> interviews = new ArrayList<>();
 
     public Job() {}
