@@ -1,6 +1,7 @@
 package com.jobpilot.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -16,10 +17,12 @@ public class Interview {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    // 关键：只写不读。POST 时可传 { "job": { "id": 123 } }，
+    // GET 时不序列化 job，避免 LAZY 初始化报错
     @ManyToOne(fetch = FetchType.LAZY)
-    @JsonIgnoreProperties("interviews")
     @JoinColumn(name = "job_id", nullable = false)
-    @OnDelete(action = OnDeleteAction.CASCADE)   // ✨ 关键：数据库外键 ON DELETE CASCADE（双保险）
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private Job job;
 
     @Column(nullable = false)
@@ -34,6 +37,12 @@ public class Interview {
 
     public Job getJob() { return job; }
     public void setJob(Job job) { this.job = job; }
+
+    // 返回时带出 jobId，方便前端使用
+    @JsonProperty("jobId")
+    public Long getJobId() {
+        return job != null ? job.getId() : null;
+    }
 
     public LocalDate getDate() { return date; }
     public void setDate(LocalDate date) { this.date = date; }

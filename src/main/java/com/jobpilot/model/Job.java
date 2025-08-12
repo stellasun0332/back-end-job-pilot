@@ -36,19 +36,21 @@ public class Job {
     private String resumeFile;
     private LocalDate reminderDate;
 
-    /** 关键：删除 Job 时级联删除 Interview；并且不把 interviews 序列化出去 */
+    /** 删除 Job 时级联删除 Interview；并且不把 interviews 序列化出去 */
     @OneToMany(
             mappedBy = "job",
             cascade = CascadeType.REMOVE,   // 删除 job 时一并删掉 interviews
             orphanRemoval = true,
             fetch = FetchType.LAZY
     )
-    @JsonIgnore   // ← 防止 /jobs 响应触发懒加载
+    @JsonIgnore   // 防止 /jobs 响应触发懒加载
     private List<Interview> interviews = new ArrayList<>();
 
     public Job() {}
 
     public Long getId() { return id; }
+    // ✅ 新增：方便通过 id 引用（将来若需要）
+    public void setId(Long id) { this.id = id; }
 
     public User getUser() { return user; }
     public void setUser(User user) { this.user = user; }

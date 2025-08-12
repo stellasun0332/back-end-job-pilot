@@ -25,10 +25,20 @@ public class InterviewController {
     // Create a new interview record for a specific job
     @PostMapping
     public Interview createInterview(@RequestBody Interview interviewData) {
-        Job job = jobRepository.findById(interviewData.getJob().getId())
+
+        // ✅ 防止 NPE：要求 body 里必须有 { "job": { "id": <jobId> }, ... }
+        if (interviewData.getJob() == null || interviewData.getJob().getId() == null) {
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST,
+                    "Missing job.id in request body. Expected: { \"job\": { \"id\": <jobId> }, ... }"
+            );
+        }
+
+        Long jobId = interviewData.getJob().getId();
+        Job job = jobRepository.findById(jobId)
                 .orElseThrow(() -> new ResponseStatusException(
                         HttpStatus.NOT_FOUND,
-                        "Job not found. No job exists with ID: " + interviewData.getJob().getId()
+                        "Job not found. No job exists with ID: " + jobId
                 ));
 
         interviewData.setJob(job);
@@ -61,7 +71,8 @@ public class InterviewController {
             );
         }
 
-        return interviewRepository.findByJobId(jobId);
+        // ✅ 同步修改仓库方法名
+        return interviewRepository.findByJob_Id(jobId);
     }
 
     // Partially update an interview (only non-null fields will be updated)
