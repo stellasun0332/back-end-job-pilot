@@ -3,6 +3,8 @@ package com.jobpilot.model;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 @Entity
@@ -24,20 +26,25 @@ public class Job {
     private LocalDate dateApplied;
 
     private String status;
+
     @Lob
     @Column(columnDefinition = "TEXT")
     private String jobDescription;
+
     private String notes;
     private String resumeFile;
     private LocalDate reminderDate;
 
-    public Job() {}
+    /** ✨ 关键：声明与 Interview 的一对多，删除 Job 时级联删除 */
+    @OneToMany(
+            mappedBy = "job",
+            cascade = CascadeType.REMOVE,   // 只在删除时级联，避免影响你现有的保存逻辑
+            orphanRemoval = true
+    )
+    @JsonIgnoreProperties("job")        // 防止序列化递归
+    private List<Interview> interviews = new ArrayList<>();
 
-//    public Job(User user, String title, String company) {
-//        this.user = user;
-//        this.title = title;
-//        this.company = company;
-//    }
+    public Job() {}
 
     public Long getId() { return id; }
 
@@ -62,10 +69,12 @@ public class Job {
     public String getNotes() { return notes; }
     public void setNotes(String notes) { this.notes = notes; }
 
-    public LocalDate getReminderDate() {return reminderDate;}
-    public void setReminderDate(LocalDate reminderDate) {this.reminderDate = reminderDate;}
+    public LocalDate getReminderDate() { return reminderDate; }
+    public void setReminderDate(LocalDate reminderDate) { this.reminderDate = reminderDate; }
 
     public String getResumeFile() { return resumeFile; }
     public void setResumeFile(String resumeFile) { this.resumeFile = resumeFile; }
-}
 
+    public List<Interview> getInterviews() { return interviews; }
+    public void setInterviews(List<Interview> interviews) { this.interviews = interviews; }
+}
