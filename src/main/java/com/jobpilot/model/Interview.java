@@ -17,8 +17,7 @@ public class Interview {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    // 关键：只写不读。POST 时可传 { "job": { "id": 123 } }，
-    // GET 时不序列化 job，避免 LAZY 初始化报错
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "job_id", nullable = false)
     @OnDelete(action = OnDeleteAction.CASCADE)
@@ -38,7 +37,7 @@ public class Interview {
     public Job getJob() { return job; }
     public void setJob(Job job) { this.job = job; }
 
-    // 返回时带出 jobId，方便前端使用
+
     @JsonProperty("jobId")
     public Long getJobId() {
         return job != null ? job.getId() : null;

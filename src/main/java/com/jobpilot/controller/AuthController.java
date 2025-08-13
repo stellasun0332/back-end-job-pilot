@@ -25,7 +25,7 @@ public class AuthController {
         this.userService = userService;
     }
 
-    /** 注册 */
+
     @PostMapping("/register")
     public ResponseEntity<AuthResponse> register(@RequestBody SignupRequest req) {
         try {
@@ -37,7 +37,6 @@ public class AuthController {
         }
     }
 
-    /** 登录 */
     @PostMapping("/login")
     public ResponseEntity<AuthResponse> login(@RequestBody LoginRequest req) {
         try {
@@ -49,7 +48,7 @@ public class AuthController {
         }
     }
 
-    /** 解析 token 返回当前用户 */
+
     @GetMapping("/me")
     public ResponseEntity<?> me(@RequestHeader(value = "Authorization", required = false) String authorization) {
         try {

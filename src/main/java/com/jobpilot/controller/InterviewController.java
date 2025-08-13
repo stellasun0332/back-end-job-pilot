@@ -26,7 +26,7 @@ public class InterviewController {
     @PostMapping
     public Interview createInterview(@RequestBody Interview interviewData) {
 
-        // ✅ 防止 NPE：要求 body 里必须有 { "job": { "id": <jobId> }, ... }
+
         if (interviewData.getJob() == null || interviewData.getJob().getId() == null) {
             throw new ResponseStatusException(
                     HttpStatus.BAD_REQUEST,
@@ -71,7 +71,7 @@ public class InterviewController {
             );
         }
 
-        // ✅ 同步修改仓库方法名
+
         return interviewRepository.findByJob_Id(jobId);
     }
 
